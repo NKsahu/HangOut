@@ -28,4 +28,8 @@ public void SetPass(String Password){
     public void Commite(){
        editor.commit();
     }
+
+    public String GetUserCode(){
+       return  Sp.getString("UserCode",null);
+    }
 }

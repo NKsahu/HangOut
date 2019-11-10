@@ -10,10 +10,13 @@ import android.widget.EditText;
 import com.example.hangout.Session.*;
 import com.example.hangout.RetrofitLib.APIClien;
 import com.example.hangout.RetrofitLib.ApiInterface;
-import java.lang.String;
+import com.google.gson.Gson;
+
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.String;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        IsLoggedIn();
         overridePendingTransition(R.anim.slide_out, R.anim.slide_in);
         setContentView(R.layout.activity_main);
         MobileNo=findViewById(R.id.Mobileno);
@@ -40,7 +44,13 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
+   public void IsLoggedIn(){
+       UserSession userSession=new UserSession(MainActivity.this);
+       if(userSession.GetUserCode()!=null){
+           startActivity(new Intent(MainActivity.this,MenuItem.class));
+           this.finish();
+       }
+   }
     public void SignIn(){
         Mobile=MobileNo.getText().toString();
         Pass=Password.getText().toString();
@@ -74,20 +84,32 @@ if(Mobile==null|| Mobile.equalsIgnoreCase("")){
         JSONObject Obj=new JSONObject();
         Obj.put("UserId",Mobile);
         Obj.put("Password",Pass);
-        Call<JSONObject> JsonLogin=apiInterface.GetLogin(Obj.toString());
+        Call<Object> JsonLogin=apiInterface.GetLogin(Obj.toString());
         String Url=JsonLogin.request().url().toString();
-        JsonLogin.enqueue(new Callback<JSONObject>() {
+        JsonLogin.enqueue(new Callback<Object>() {
             @Override
-            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+            public void onResponse(Call<Object> call, Response<Object> response) {
 
-                Log.d("Result",response.body().toString());
+                Log.d("Result",new Gson().toJson(response.body()));
+try {
 
-                UserSession userSession=new UserSession(MainActivity.this);
-                //userSession.SetName(response.body().);
+   String Obj=new Gson().toJson(response.body());
+    JSONObject Jobj=new JSONObject(Obj);
+    UserSession userSession=new UserSession(MainActivity.this);
+    userSession.SetName(Jobj.get("UserName").toString());
+    userSession.SetUserCode(Jobj.get("UserCode").toString());
+    userSession.Commite();
+    startActivity(new Intent(MainActivity.this,MenuItem.class));
+
+}catch (Exception e){
+
+    e.printStackTrace();
+}
+
             }
 
             @Override
-            public void onFailure(Call<JSONObject> call, Throwable t) {
+            public void onFailure(Call<Object> call, Throwable t) {
                 Log.d("Result","Error");
             }
         });
