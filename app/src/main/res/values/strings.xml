@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">HangOut</string>
+    <string name="Sign_in">SIGN IN</string>
+    <string name="Sign_up">SIGN UP</string>
+    <string name="SignupBtn"><u>DONT HAVE ACCOUNT ? SIGN UP</u></string>
+    <string name="SigninBtn"><u>ALREADY HAVE ACCOUNT ? SIGN IN</u></string>
+</resources>
